@@ -1,6 +1,6 @@
 echo "Object.defineProperty(exports, \"__esModule\", { value: true });
 exports.default = {
-  PROJECT_NAME: \"BooksBackend\",
+  PROJECT_NAME: \"Books\",
   REPO: \"\",
   REPO_OWNER: \"\",
   BRANCH: \"\",

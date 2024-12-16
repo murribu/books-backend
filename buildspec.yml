@@ -1,0 +1,38 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+  pre_build:
+    commands:
+      - npm install -g yarn
+      - chmod +x bash/setup-ssh.sh
+      - chmod +x bash/cleanup-ssh.sh
+      - chmod +x bash/makeConfig.sh
+      - bash/setup-ssh.sh
+      - wait $!
+      - bash/makeConfig.sh
+      - yarn
+      - cd assets/lambda/layers/aws/nodejs
+      - yarn
+      - wait $!
+      - cd ../../../../..
+      - yarn build
+      - wait $!
+  build:
+    commands:
+      - npx cdk deploy Books${ENVIRONMENT}Layers --require-approval never
+      - npx cdk deploy Books${ENVIRONMENT}DynamoDb --require-approval never
+      - npx cdk deploy Books${ENVIRONMENT}AppsyncPre --require-approval never
+      - npx cdk deploy Books${ENVIRONMENT}Cognito --require-approval never
+      - npx cdk deploy Books${ENVIRONMENT}Appsync --require-approval never
+      - npx cdk deploy Books${ENVIRONMENT}AppsyncResolvers --require-approval never
+      
+  post_build:
+    commands:
+      - bash/cleanup-ssh.sh
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - "**/*"
