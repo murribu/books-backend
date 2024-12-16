@@ -190,10 +190,10 @@ export class Appsync extends Stack {
       this,
       privateLambdaDsName,
       {
-        apiId: this.publicApi.attrApiId,
+        apiId: this.privateApi.attrApiId,
         name: privateLambdaDsName,
         type: "AWS_LAMBDA",
-        lambdaConfig: { lambdaFunctionArn: publicFn.functionArn },
+        lambdaConfig: { lambdaFunctionArn: privateFn.functionArn },
         serviceRoleArn: lambdaRole.roleArn,
       }
     );
@@ -205,14 +205,14 @@ export class Appsync extends Stack {
       definition: schema,
     });
 
-    new CfnGraphQLSchema(this, `${PROJECT_NAME}PublicSchema`, {
-      apiId: this.publicApi.attrApiId,
-      definition: schema,
-    });
-
     this.publicApi = new CfnGraphQLApi(this, `${PROJECT_NAME}PublicApi`, {
       authenticationType: "API_KEY",
       name: `${PROJECT_NAME}PublicApi`,
+    });
+
+    new CfnGraphQLSchema(this, `${PROJECT_NAME}PublicSchema`, {
+      apiId: this.publicApi.attrApiId,
+      definition: schema,
     });
 
     this.apiKey = new CfnApiKey(this, `${PROJECT_NAME}ApiKey`, {
