@@ -7,11 +7,7 @@ phases:
   pre_build:
     commands:
       - npm install -g yarn
-      - chmod +x bash/setup-ssh.sh
-      - chmod +x bash/cleanup-ssh.sh
       - chmod +x bash/makeConfig.sh
-      - bash/setup-ssh.sh
-      - wait $!
       - bash/makeConfig.sh
       - yarn
       - cd assets/lambda/layers/aws/nodejs
@@ -31,7 +27,6 @@ phases:
       
   post_build:
     commands:
-      - bash/cleanup-ssh.sh
       - echo Build completed on `date`
 artifacts:
   files:
