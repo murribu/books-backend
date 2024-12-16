@@ -210,11 +210,6 @@ export class Appsync extends Stack {
       name: `${PROJECT_NAME}PublicApi`,
     });
 
-    new CfnGraphQLSchema(this, `${PROJECT_NAME}PublicSchema`, {
-      apiId: this.publicApi.attrApiId,
-      definition: schema,
-    });
-
     this.apiKey = new CfnApiKey(this, `${PROJECT_NAME}ApiKey`, {
       apiId: this.publicApi.attrApiId,
       expires: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
