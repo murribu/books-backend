@@ -40,7 +40,7 @@ export class DynamoDb extends Stack {
       tableName,
       partitionKey: { name: "PK", type: AttributeType.STRING },
       sortKey: { name: "SK", type: AttributeType.STRING },
-      stream: StreamViewType.NEW_IMAGE,
+      stream: StreamViewType.NEW_AND_OLD_IMAGES,
       readCapacity: 2,
       writeCapacity: 1,
     });
