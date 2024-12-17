@@ -3,10 +3,17 @@ import { AttributeType, StreamViewType, Table } from "aws-cdk-lib/aws-dynamodb";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import config from "../config";
-import { Code, Function, LayerVersion, Runtime } from "aws-cdk-lib/aws-lambda";
+import {
+  Code,
+  Function,
+  LayerVersion,
+  Runtime,
+  StartingPosition,
+} from "aws-cdk-lib/aws-lambda";
 import path = require("path");
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Effect, Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { DynamoEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 
 const { PROJECT_NAME } = config;
 
@@ -54,6 +61,19 @@ export class DynamoDb extends Stack {
       writeCapacity: 1,
     });
 
+    const streamFunction = new Function(this, `${PROJECT_NAME}StreamFunction`, {
+      runtime: Runtime.NODEJS_22_X,
+      handler: "index.handler",
+      code: Code.fromAsset(path.join(__dirname, "../assets/lambda/stream"), {
+        exclude: ["node_modules"],
+      }),
+      environment: {
+        TABLE_NAME: this.table.tableName,
+        DEAD_LETTER_QUEUE_URL: this.deadLetterQueue.queueUrl,
+      },
+      layers: [awsLayer],
+    });
+
     const seedFunction = new Function(this, `${PROJECT_NAME}SeedFunction`, {
       runtime: Runtime.NODEJS_22_X,
       handler: "index.handler",
@@ -75,6 +95,7 @@ export class DynamoDb extends Stack {
 
     dynamoPolicyStatement.addActions("dynamodb:Query");
     dynamoPolicyStatement.addActions("dynamodb:PutItem");
+    dynamoPolicyStatement.addActions("dynamodb:UpdateItem");
 
     dynamoPolicyStatement.addResources(
       this.table.tableArn,
@@ -83,5 +104,11 @@ export class DynamoDb extends Stack {
     );
     dynamoPolicy.addStatements(dynamoPolicyStatement);
     seedRole?.attachInlinePolicy(dynamoPolicy);
+    streamFunction.addEventSource(
+      new DynamoEventSource(this.table, {
+        startingPosition: StartingPosition.TRIM_HORIZON,
+        batchSize: 50,
+      })
+    );
   }
 }

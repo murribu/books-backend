@@ -5,4 +5,4 @@ exports.default = {
   REPO_OWNER: \"\",
   BRANCH: \"\",
   CONNECTION_ARN: \"\",
-};" > config.ts
+};" > config.js
