@@ -11,3 +11,4 @@ config.ts
 
 .python-version
 pyproject.toml
+!config.d.ts
