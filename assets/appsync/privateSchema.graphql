@@ -23,6 +23,33 @@ input CreateBanInput {
   leaId: String
 }
 
+type DbBan {
+  PK: String
+  SK: String
+  GSI1PK: String
+  GSI1SK: String
+  bookName: String
+  bookId: String
+  author: String
+  createdBy: String
+  createdAt: String
+}
+
+type DbBook {
+  PK: String
+  SK: String
+  GSI1PK: String
+  GSI1SK: String
+  title: String
+  author: String
+  createdBy: String
+  createdAt: String
+}
+
+input GetBookInput {
+  isbn: String
+}
+
 type GetOmniReturn {
   PK: String
   SK: String
@@ -39,11 +66,13 @@ type Lea {
 }
 
 type Mutation {
-  createBan(createBanInput: CreateBanInput): Ban
+  createBan(createBanInput: CreateBanInput): DbBan
 }
 
 type Query {
   getOmni: GetOmniReturn
+  getBans: [DbBan]
+  getBook(getBookInput: GetBookInput): DbBook
 }
 
 schema {

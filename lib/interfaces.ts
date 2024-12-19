@@ -55,6 +55,7 @@ export interface CreateResolverParams {
   responseType: "Lambda" | "Multiple" | "Single";
   api: CfnGraphQLApi;
   datasource?: CfnDataSource;
+  functions?: string[];
 }
 
 export interface OutputProps {
