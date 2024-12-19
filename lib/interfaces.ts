@@ -37,6 +37,12 @@ export interface AppsyncResolversProps {
   stackProps: StackProps;
 }
 
+export interface CognitoIamProps {
+  appsync: PropsFromAppsync;
+  cognito: PropsFromCognito;
+  stackProps: StackProps;
+}
+
 export interface CognitoProps {
   stackProps: StackProps;
   dynamodb: PropsFromDynamoDb;
