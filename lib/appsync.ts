@@ -198,11 +198,18 @@ export class Appsync extends Stack {
       }
     );
 
-    let schema = fs.readFileSync("./assets/appsync/schema.graphql", "utf8");
+    let privateSchema = fs.readFileSync(
+      "./assets/appsync/privateSchema.graphql",
+      "utf8"
+    );
+    let publicSchema = fs.readFileSync(
+      "./assets/appsync/publicSchema.graphql",
+      "utf8"
+    );
 
     new CfnGraphQLSchema(this, `${PROJECT_NAME}PrivateSchema`, {
       apiId: this.privateApi.attrApiId,
-      definition: schema,
+      definition: privateSchema,
     });
 
     this.publicApi = new CfnGraphQLApi(this, `${PROJECT_NAME}PublicApi`, {
@@ -229,7 +236,7 @@ export class Appsync extends Stack {
 
     new CfnGraphQLSchema(this, `${PROJECT_NAME}PublicSchema`, {
       apiId: this.publicApi.attrApiId,
-      definition: schema,
+      definition: publicSchema,
     });
   }
 }

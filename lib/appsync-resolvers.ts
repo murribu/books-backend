@@ -11,13 +11,14 @@ export class AppsyncResolvers extends Stack {
   constructor(scope: Construct, id: string, props: AppsyncResolversProps) {
     super(scope, id, props.stackProps);
 
-    // this.createResolver({
-    //   typeName: "Query",
-    //   fieldName: "createCustomerPortalSession",
-    //   kind: "UNIT",
-    //   responseType: "Single",
-    //   datasource: props.appsync.lambdadatasource,
-    // });
+    this.createResolver({
+      typeName: "Query",
+      fieldName: "getOmni",
+      kind: "UNIT",
+      responseType: "Single",
+      datasource: props.appsync.privateDynamoDatasource,
+      api: props.appsync.privateApi,
+    });
   }
   createResolver = (params: CreateResolverParams): CfnResolver => {
     const { typeName, fieldName, kind, responseType, datasource, api } = params;

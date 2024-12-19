@@ -7,15 +7,15 @@ import {
 export const ddb = new DynamoDB({ apiVersion: "2006-03-01" });
 const leas = require("./leas.json");
 
+const TableName = process.env.TABLE_NAME!;
 export const handler = async () => {
   const queryParams: QueryCommandInput = {
-    TableName: process.env.DYNAMO_TABLE!,
+    TableName,
     KeyConditionExpression: "PK = :pk and SK = :sk",
     ExpressionAttributeValues: {
       ":pk": { S: "omni" },
       ":sk": { S: "i" },
     },
-    AttributesToGet: ["PK", "SK", "leas"],
   };
   const result = await ddb.query(queryParams);
   if (result.Items && result.Items.length > 0) {
@@ -24,7 +24,7 @@ export const handler = async () => {
     } else {
       // update omni with leas
       const updateItemParams: UpdateItemCommandInput = {
-        TableName: process.env.DYNAMO_TABLE!,
+        TableName,
         Key: {
           PK: { S: "omni" },
           SK: { S: "i" },
@@ -45,7 +45,7 @@ export const handler = async () => {
   } else {
     // put omni with leas
     const putItemParams: PutItemCommandInput = {
-      TableName: process.env.DYNAMO_TABLE!,
+      TableName,
       Item: {
         PK: { S: "omni" },
         SK: { S: "i" },
