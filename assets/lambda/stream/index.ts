@@ -7,8 +7,10 @@ import {
 import { DynamoDBStreamEvent } from "aws-lambda";
 export const ddb = new DynamoDB({ apiVersion: "2006-03-01" });
 
+const TableName = process.env.TABLE_NAME || "";
+
 export const handler = async (event: DynamoDBStreamEvent) => {
-  console.log("event", event);
+  console.log("event", JSON.stringify(event, null, 2));
 
   const newBookRecords = event.Records.filter(
     (record) =>
@@ -32,7 +34,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
   );
   let omni;
   const omniQueryParams: QueryCommandInput = {
-    TableName: process.env.DYNAMO_TABLE!,
+    TableName,
     KeyConditionExpression: "PK = :pk and SK = :sk",
     ExpressionAttributeValues: {
       ":pk": { S: "omni" },
@@ -63,7 +65,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
         },
       }));
       const updateItemParams: UpdateItemCommandInput = {
-        TableName: process.env.DYNAMO_TABLE!,
+        TableName,
         Key: {
           PK: { S: "omni" },
           SK: { S: "i" },
@@ -100,7 +102,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
         S: record.dynamodb?.NewImage?.PK.S?.split("#")[1] || "",
       }));
       const updateItemParams: UpdateItemCommandInput = {
-        TableName: process.env.DYNAMO_TABLE!,
+        TableName,
         Key: {
           PK: { S: "omni" },
           SK: { S: "i" },
@@ -137,7 +139,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       }
     }
     const updateItemParams: UpdateItemCommandInput = {
-      TableName: process.env.DYNAMO_TABLE!,
+      TableName,
       Key: {
         PK: { S: "omni" },
         SK: { S: "i" },
@@ -173,7 +175,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       }
     }
     const updateItemParams: UpdateItemCommandInput = {
-      TableName: process.env.DYNAMO_TABLE!,
+      TableName,
       Key: {
         PK: { S: "omni" },
         SK: { S: "i" },

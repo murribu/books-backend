@@ -49,6 +49,7 @@ type DbBook {
   GSI1SK: String
   title: String
   author: String
+  isbn: String
   link: String
   createdBy: String
   createdAt: String
