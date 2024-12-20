@@ -1,9 +1,10 @@
 import { Duration, Stack } from "aws-cdk-lib";
 import {
-  CfnApiKey,
-  CfnDataSource,
-  CfnGraphQLApi,
-  CfnGraphQLSchema,
+  AuthorizationType,
+  Definition,
+  DynamoDbDataSource,
+  GraphqlApi,
+  LambdaDataSource,
 } from "aws-cdk-lib/aws-appsync";
 import {
   Effect,
@@ -24,13 +25,13 @@ import path = require("path");
 const { PROJECT_NAME } = config;
 
 export class Appsync extends Stack {
-  public readonly privateApi: CfnGraphQLApi;
-  public readonly privateDynamoDatasource: CfnDataSource;
-  public readonly publicDynamoDatasource: CfnDataSource;
-  public readonly privateLambdaDatasource: CfnDataSource;
-  public readonly publicLambdaDatasource: CfnDataSource;
-  public readonly publicApi: CfnGraphQLApi;
-  public readonly apiKey: CfnApiKey;
+  public readonly privateApi: GraphqlApi;
+  public readonly privateDynamoDatasource: DynamoDbDataSource;
+  public readonly publicDynamoDatasource: DynamoDbDataSource;
+  public readonly privateLambdaDatasource: LambdaDataSource;
+  public readonly publicLambdaDatasource: LambdaDataSource;
+  public readonly publicApi: GraphqlApi;
+  public readonly apiKey: string | undefined;
 
   constructor(scope: Construct, id: string, props: AppsyncProps) {
     super(scope, id, props.stackProps);
@@ -44,32 +45,27 @@ export class Appsync extends Stack {
       "AppsyncAwsLayerFromArn",
       awsLayerArn
     );
-
-    this.privateApi = new CfnGraphQLApi(this, `${PROJECT_NAME}Api`, {
-      authenticationType: "AMAZON_COGNITO_USER_POOLS",
-      userPoolConfig: {
-        awsRegion: "us-east-1",
-        userPoolId: props.cognito.userpool.userPoolId,
-        defaultAction: "ALLOW",
-      },
+    this.privateApi = new GraphqlApi(this, `${PROJECT_NAME}Api`, {
       name: `${PROJECT_NAME}Api`,
-    });
-
-    const dynamoDsName = `${PROJECT_NAME}PrivateDynamoDataSource`;
-
-    this.privateDynamoDatasource = new CfnDataSource(this, dynamoDsName, {
-      apiId: this.privateApi.attrApiId,
-      name: dynamoDsName,
-      type: "AMAZON_DYNAMODB",
-      dynamoDbConfig: {
-        awsRegion: "us-east-1",
-        tableName: props.dynamodb.table.tableName,
+      definition: Definition.fromFile(
+        path.join(__dirname, "../assets/appsync/privateSchema.graphql")
+      ),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: AuthorizationType.USER_POOL,
+          userPoolConfig: {
+            userPool: props.cognito.userpool,
+          },
+        },
       },
-      serviceRoleArn: props.appsyncPre.privateApiRole.roleArn,
     });
+    this.privateDynamoDatasource = this.privateApi.addDynamoDbDataSource(
+      `${PROJECT_NAME}PrivateDynamoDataSource`,
+      props.dynamodb.table
+    );
 
-    // TODO: Parameterize this
-    const DOMAIN = "";
+    this.privateDynamoDatasource.ds.serviceRoleArn =
+      props.appsyncPre.privateApiRole.roleArn;
 
     const privateFn = new Function(
       this,
@@ -85,7 +81,6 @@ export class Appsync extends Stack {
         ),
         environment: {
           DYNAMODB_TABLE: `${PROJECT_NAME}`,
-          DOMAIN,
         },
         timeout: Duration.minutes(1),
         layers: [awsLayer],
@@ -106,7 +101,6 @@ export class Appsync extends Stack {
         ),
         environment: {
           DYNAMODB_TABLE: `${PROJECT_NAME}`,
-          DOMAIN,
           COGNITO_CLIENT_ID: props.cognito.appsyncclient.ref,
           COGNITO_USER_POOL_ID: props.cognito.userpool.userPoolId,
         },
@@ -186,57 +180,36 @@ export class Appsync extends Stack {
     const privateLambdaDsName = `${PROJECT_NAME}PrivateLambdaDataSource`;
     const publicLambdaDsName = `${PROJECT_NAME}PublicLambdaDataSource`;
 
-    this.privateLambdaDatasource = new CfnDataSource(
-      this,
+    this.privateLambdaDatasource = this.privateApi.addLambdaDataSource(
       privateLambdaDsName,
-      {
-        apiId: this.privateApi.attrApiId,
-        name: privateLambdaDsName,
-        type: "AWS_LAMBDA",
-        lambdaConfig: { lambdaFunctionArn: privateFn.functionArn },
-        serviceRoleArn: lambdaRole.roleArn,
-      }
+      privateFn
     );
 
-    let privateSchema = fs.readFileSync(
-      "./assets/appsync/privateSchema.graphql",
-      "utf8"
-    );
-    let publicSchema = fs.readFileSync(
-      "./assets/appsync/publicSchema.graphql",
-      "utf8"
-    );
+    this.privateLambdaDatasource.ds.serviceRoleArn = lambdaRole.roleArn;
 
-    new CfnGraphQLSchema(this, `${PROJECT_NAME}PrivateSchema`, {
-      apiId: this.privateApi.attrApiId,
-      definition: privateSchema,
-    });
-
-    this.publicApi = new CfnGraphQLApi(this, `${PROJECT_NAME}PublicApi`, {
-      authenticationType: "API_KEY",
+    this.publicApi = new GraphqlApi(this, `${PROJECT_NAME}PublicApi`, {
       name: `${PROJECT_NAME}PublicApi`,
+      definition: Definition.fromFile(
+        path.join(__dirname, "../assets/appsync/publicSchema.graphql")
+      ),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: AuthorizationType.API_KEY,
+        },
+      },
     });
 
-    this.apiKey = new CfnApiKey(this, `${PROJECT_NAME}ApiKey`, {
-      apiId: this.publicApi.attrApiId,
-      expires: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
-    });
+    this.apiKey = this.publicApi.apiKey;
 
     publicFn.role?.attachInlinePolicy(dynamoPolicy);
     privateFn.role?.attachInlinePolicy(cognitoPolicy);
     privateFn.role?.attachInlinePolicy(dynamoPolicy);
 
-    this.publicLambdaDatasource = new CfnDataSource(this, publicLambdaDsName, {
-      apiId: this.publicApi.attrApiId,
-      name: publicLambdaDsName,
-      type: "AWS_LAMBDA",
-      lambdaConfig: { lambdaFunctionArn: publicFn.functionArn },
-      serviceRoleArn: lambdaRole.roleArn,
-    });
+    this.publicLambdaDatasource = this.publicApi.addLambdaDataSource(
+      publicLambdaDsName,
+      publicFn
+    );
 
-    new CfnGraphQLSchema(this, `${PROJECT_NAME}PublicSchema`, {
-      apiId: this.publicApi.attrApiId,
-      definition: publicSchema,
-    });
+    this.publicLambdaDatasource.ds.serviceRoleArn = lambdaRole.roleArn;
   }
 }

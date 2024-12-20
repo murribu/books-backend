@@ -48,7 +48,7 @@ export class CognitoIam extends Stack {
 
     appsyncAuthPolicyStatement.addActions("appsync:GraphQL");
     appsyncAuthPolicyStatement.addResources(
-      props.appsync.privateApi.attrArn,
+      props.appsync.privateApi.arn,
       "arn:aws:appsync:*:*:apis/*/types/*/fields/*"
     );
     cognitoAuthPolicyDocument.addStatements(appsyncAuthPolicyStatement);
