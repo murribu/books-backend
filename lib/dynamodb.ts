@@ -74,6 +74,8 @@ export class DynamoDb extends Stack {
       layers: [awsLayer],
     });
 
+    const streamRole = streamFunction.role;
+
     const seedFunction = new Function(this, `${PROJECT_NAME}SeedFunction`, {
       runtime: Runtime.NODEJS_22_X,
       handler: "index.handler",
@@ -104,6 +106,8 @@ export class DynamoDb extends Stack {
     );
     dynamoPolicy.addStatements(dynamoPolicyStatement);
     seedRole?.attachInlinePolicy(dynamoPolicy);
+    streamRole?.attachInlinePolicy(dynamoPolicy);
+
     streamFunction.addEventSource(
       new DynamoEventSource(this.table, {
         startingPosition: StartingPosition.TRIM_HORIZON,

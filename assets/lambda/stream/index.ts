@@ -70,7 +70,8 @@ export const handler = async (event: DynamoDBStreamEvent) => {
           PK: { S: "omni" },
           SK: { S: "i" },
         },
-        UpdateExpression: "SET #books = list_append(#books, :books)",
+        UpdateExpression:
+          "SET books = list_append(if_not_exists(#books, :empty_list), :books)",
         ExpressionAttributeNames: {
           "#books": "books",
         },
@@ -78,6 +79,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
           ":books": {
             L,
           },
+          ":empty_list": { L: [] },
         },
       };
       await ddb.updateItem(updateItemParams);
