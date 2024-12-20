@@ -18,12 +18,13 @@ phases:
       - wait $!
   build:
     commands:
-      - npx cdk deploy Books${ENVIRONMENT}Layers --require-approval never
-      - npx cdk deploy Books${ENVIRONMENT}DynamoDb --require-approval never
-      - npx cdk deploy Books${ENVIRONMENT}AppsyncPre --require-approval never
-      - npx cdk deploy Books${ENVIRONMENT}Cognito --require-approval never
-      - npx cdk deploy Books${ENVIRONMENT}Appsync --require-approval never
-      - npx cdk deploy Books${ENVIRONMENT}AppsyncResolvers --require-approval never
+      - npx cdk deploy BooksLayers --require-approval never
+      - npx cdk deploy BooksDynamoDb --require-approval never
+      - npx cdk deploy BooksAppsyncPre --require-approval never
+      - npx cdk deploy BooksCognito --require-approval never
+      - npx cdk deploy BooksAppsync --require-approval never
+      - npx cdk deploy BooksAppsyncResolvers --require-approval never
+      - npx cdk deploy BooksCognitoIam --require-approval never
       
   post_build:
     commands:

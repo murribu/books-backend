@@ -9,7 +9,6 @@ import { Construct } from "constructs";
 import config from "../config";
 import { CognitoProps } from "./interfaces";
 0;
-import path = require("path");
 
 const { PROJECT_NAME } = config;
 

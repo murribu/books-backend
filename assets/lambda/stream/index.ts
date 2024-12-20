@@ -50,13 +50,13 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       (record) =>
         !omniBooks.find(
           (book) =>
-            book.M?.id?.S === record.dynamodb?.NewImage?.PK.S?.split("#")[1]
+            book.M?.isbn?.S === record.dynamodb?.NewImage?.PK.S?.split("#")[1]
         )
     );
     if (newBooksThatAreNotInOmni.length > 0) {
       const L: AttributeValue[] = newBooksThatAreNotInOmni.map((record) => ({
         M: {
-          id: { S: record.dynamodb?.NewImage?.PK.S?.split("#")[1] || "" },
+          isbn: { S: record.dynamodb?.NewImage?.PK.S?.split("#")[1] || "" },
           title: { S: record.dynamodb?.NewImage?.title.S || "" },
           author: { S: record.dynamodb?.NewImage?.author.S || "" },
           count: { N: "0" },
@@ -129,7 +129,7 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     for (const index of removedBookRecords.keys()) {
       const omniIndex = omniBooks.findIndex(
         (book) =>
-          book.M?.id?.S ===
+          book.M?.isbn?.S ===
           removedBookRecords[index].dynamodb?.OldImage?.PK.S?.split("#")[1]
       );
       if (omniIndex > -1) {

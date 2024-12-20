@@ -9,6 +9,7 @@ import { DynamoDb } from "../lib/dynamodb";
 import { Layers } from "../lib/layers";
 
 import config from "../config";
+import { CognitoIam } from "../lib/cognito-iam";
 
 const { PROJECT_NAME } = config;
 
@@ -40,6 +41,12 @@ new AppsyncResolvers(app, `${PROJECT_NAME}AppsyncResolvers`, {
   stackProps: { env },
   appsync,
 });
+new CognitoIam(app, `${PROJECT_NAME}CognitoIam`, {
+  stackProps: { env },
+  cognito,
+  appsync,
+});
+
 new Codebuild(app, `${PROJECT_NAME}BackendCodebuild`, {
   env,
 });

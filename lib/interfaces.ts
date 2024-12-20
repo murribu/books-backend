@@ -4,6 +4,9 @@ import {
   CfnApiKey,
   CfnDataSource,
   CfnGraphQLApi,
+  DynamoDbDataSource,
+  GraphqlApi,
+  LambdaDataSource,
 } from "aws-cdk-lib/aws-appsync";
 import {
   CfnIdentityPool,
@@ -37,6 +40,12 @@ export interface AppsyncResolversProps {
   stackProps: StackProps;
 }
 
+export interface CognitoIamProps {
+  appsync: PropsFromAppsync;
+  cognito: PropsFromCognito;
+  stackProps: StackProps;
+}
+
 export interface CognitoProps {
   stackProps: StackProps;
   dynamodb: PropsFromDynamoDb;
@@ -47,8 +56,9 @@ export interface CreateResolverParams {
   kind: "UNIT" | "PIPELINE";
   fieldName: string;
   responseType: "Lambda" | "Multiple" | "Single";
-  api: CfnGraphQLApi;
-  datasource?: CfnDataSource;
+  api: GraphqlApi;
+  dataSource?: DynamoDbDataSource | LambdaDataSource;
+  functions?: string[];
 }
 
 export interface OutputProps {
@@ -64,13 +74,13 @@ export interface PropsFromApiGateway {
 }
 
 export interface PropsFromAppsync {
-  privateApi: CfnGraphQLApi;
-  privateDynamoDatasource: CfnDataSource;
-  publicDynamoDatasource: CfnDataSource;
-  privateLambdaDatasource: CfnDataSource;
-  publicLambdaDatasource: CfnDataSource;
-  publicApi: CfnGraphQLApi;
-  apiKey: CfnApiKey;
+  privateApi: GraphqlApi;
+  privateDynamoDatasource: DynamoDbDataSource;
+  publicDynamoDatasource: DynamoDbDataSource;
+  privateLambdaDatasource: LambdaDataSource;
+  publicLambdaDatasource: LambdaDataSource;
+  publicApi: GraphqlApi;
+  apiKey: string | undefined;
 }
 
 export interface PropsFromAppsyncPre {

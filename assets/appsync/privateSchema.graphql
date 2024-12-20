@@ -1,0 +1,90 @@
+type Ban {
+  PK: String
+  SK: String
+  GSI1PK: String
+  GSI1SK: String
+  bookName: String
+  bookId: String
+  author: String
+  createdBy: String
+  createdAt: String
+}
+
+type Book {
+  title: String
+  author: String
+  isbn: String
+  count: Int
+}
+
+input CreateBanInput {
+  isbn: String
+  whenBanned: String
+  leaId: String
+}
+
+input CreateBookInput {
+  title: String
+  author: String
+  isbn: String
+  link: String
+}
+
+type DbBan {
+  PK: String
+  SK: String
+  GSI1PK: String
+  GSI1SK: String
+  bookName: String
+  bookId: String
+  author: String
+  createdBy: String
+  createdAt: String
+}
+
+type DbBook {
+  PK: String
+  SK: String
+  GSI1PK: String
+  GSI1SK: String
+  title: String
+  author: String
+  link: String
+  createdBy: String
+  createdAt: String
+}
+
+input GetBookInput {
+  isbn: String
+}
+
+type GetOmniReturn {
+  PK: String
+  SK: String
+  tags: [String]
+  books: [Book]
+  leas: [Lea]
+}
+
+type Lea {
+  name: String
+  id: String
+  county: String
+  score: Int
+}
+
+type Mutation {
+  createBan(createBanInput: CreateBanInput): DbBan
+  createBook(createBookInput: CreateBookInput): DbBook
+}
+
+type Query {
+  getOmni: GetOmniReturn
+  getBans: [DbBan]
+  getBook(getBookInput: GetBookInput): DbBook
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
