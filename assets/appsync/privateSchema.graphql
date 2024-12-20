@@ -23,6 +23,13 @@ input CreateBanInput {
   leaId: String
 }
 
+input CreateBookInput {
+  title: String
+  author: String
+  isbn: String
+  link: String
+}
+
 type DbBan {
   PK: String
   SK: String
@@ -42,6 +49,7 @@ type DbBook {
   GSI1SK: String
   title: String
   author: String
+  link: String
   createdBy: String
   createdAt: String
 }
@@ -67,6 +75,7 @@ type Lea {
 
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
+  createBook(createBookInput: CreateBookInput): DbBook
 }
 
 type Query {

@@ -1,0 +1,20 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "UpdateItem",
+  "key" : {
+    "PK" : { "S": "omni" },
+    "SK" : { "S": "i" }
+  },
+  "updateExpression" : "SET books = list_append(if_not_exists(#books, :empty_list), :book)",
+  "expressionAttributeValues" : {
+    ":book" : { "L": [
+      { "M": {
+        "isbn": { "S": "$ctx.args.createBookInput.isbn" },
+        "title": { "S": "$ctx.args.createBookInput.title" },
+        "author": { "S": "$ctx.args.createBookInput.author" },
+        "count": { "N": "0" }
+      }}
+    ]},
+    ":empty_list" : { "L": [] }
+  }
+}

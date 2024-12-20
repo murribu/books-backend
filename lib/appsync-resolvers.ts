@@ -44,6 +44,14 @@ export class AppsyncResolvers extends Stack {
       api: props.appsync.privateApi,
       functions: ["getBook", "putBan"],
     });
+    this.createResolver({
+      typeName: "Mutation",
+      fieldName: "createBook",
+      kind: "UNIT",
+      responseType: "Single",
+      dataSource: props.appsync.privateDynamoDatasource,
+      api: props.appsync.privateApi,
+    });
   }
   createResolver = (params: CreateResolverParams): Resolver => {
     const {
