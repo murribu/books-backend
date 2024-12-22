@@ -75,11 +75,11 @@ export class AppsyncResolvers extends Stack {
     if (kind === "PIPELINE") {
       const pipelineConfig = functions?.map((functionName) => {
         const request = fs.readFileSync(
-          `./assets/appsync/resolvers/Function.${functionName}.vtl`,
+          `./assets/appsync/resolvers/Function.${functionName}.request.vtl`,
           "utf-8"
         );
         const response = fs.readFileSync(
-          `./assets/appsync/resolvers/response.Single.vtl`,
+          `./assets/appsync/resolvers/Function.${functionName}.response.vtl`,
           "utf-8"
         );
         return new AppsyncFunction(this, `${PROJECT_NAME}${functionName}`, {

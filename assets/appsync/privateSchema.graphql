@@ -14,6 +14,7 @@ type Book {
   title: String
   author: String
   isbn: String
+  link: String
   count: Int
 }
 
@@ -21,6 +22,8 @@ input CreateBanInput {
   isbn: String
   whenBanned: String
   leaId: String
+  leaName: String
+  banTypeId: String
 }
 
 input CreateBookInput {
@@ -38,6 +41,7 @@ type DbBan {
   bookName: String
   bookId: String
   author: String
+  leaName: String
   createdBy: String
   createdAt: String
 }
@@ -49,7 +53,6 @@ type DbBook {
   GSI1SK: String
   title: String
   author: String
-  isbn: String
   link: String
   createdBy: String
   createdAt: String
@@ -59,12 +62,19 @@ input GetBookInput {
   isbn: String
 }
 
+type BanType {
+  name: String
+  id: String
+  score: Int
+}
+
 type GetOmniReturn {
   PK: String
   SK: String
   tags: [String]
   books: [Book]
   leas: [Lea]
+  banTypes: [BanType]
 }
 
 type Lea {

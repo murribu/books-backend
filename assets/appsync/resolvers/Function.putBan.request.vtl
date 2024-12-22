@@ -1,0 +1,17 @@
+{
+  "version": "2017-02-28",
+  "operation": "PutItem",
+  "key": {
+    "PK": $util.dynamodb.toDynamoDBJson("ban"),
+    "SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.isbn#$ctx.stash.whenBanned")
+  },
+  "attributeValues": {
+    "GSI1PK": $util.dynamodb.toDynamoDBJson("ban#$ctx.stash.leaId"),
+    "GSI1SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.whenBanned"),
+    "title": $util.dynamodb.toDynamoDBJson("$ctx.stash.title"),
+    "author": $util.dynamodb.toDynamoDBJson("$ctx.stash.author"),
+    "leaName": $util.dynamodb.toDynamoDBJson("$ctx.stash.leaName"),
+    "createdBy": $util.dynamodb.toDynamoDBJson("$ctx.identity.username"),
+    "createdAt": $util.dynamodb.toDynamoDBJson("$util.time.nowISO8601()")
+  }
+}
