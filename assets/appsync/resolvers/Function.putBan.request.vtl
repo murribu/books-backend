@@ -3,14 +3,15 @@
   "operation": "PutItem",
   "key": {
     "PK": $util.dynamodb.toDynamoDBJson("ban"),
-    "SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.isbn#$ctx.stash.whenBanned")
+    "SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.isbn#$ctx.stash.whenBanned#$ctx.stash.leaId")
   },
   "attributeValues": {
     "GSI1PK": $util.dynamodb.toDynamoDBJson("ban#$ctx.stash.leaId"),
-    "GSI1SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.whenBanned"),
+    "GSI1SK": $util.dynamodb.toDynamoDBJson("$ctx.stash.whenBanned#$ctx.stash.isbn"),
     "title": $util.dynamodb.toDynamoDBJson("$ctx.stash.title"),
     "author": $util.dynamodb.toDynamoDBJson("$ctx.stash.author"),
     "leaName": $util.dynamodb.toDynamoDBJson("$ctx.stash.leaName"),
+    "banTypeId": $util.dynamodb.toDynamoDBJson("$ctx.stash.banTypeId"),
     "createdBy": $util.dynamodb.toDynamoDBJson("$ctx.identity.username"),
     "createdAt": $util.dynamodb.toDynamoDBJson("$util.time.nowISO8601()")
   }

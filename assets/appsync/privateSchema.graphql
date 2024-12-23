@@ -38,8 +38,8 @@ type DbBan {
   SK: String
   GSI1PK: String
   GSI1SK: String
-  bookName: String
-  bookId: String
+  title: String
+  isbn: String
   author: String
   leaName: String
   createdBy: String
