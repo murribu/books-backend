@@ -52,6 +52,14 @@ export class AppsyncResolvers extends Stack {
       dataSource: props.appsync.privateDynamoDatasource,
       api: props.appsync.privateApi,
     });
+    this.createResolver({
+      typeName: "Query",
+      fieldName: "getAllBans",
+      kind: "UNIT",
+      responseType: "Multiple",
+      dataSource: props.appsync.privateDynamoDatasource,
+      api: props.appsync.privateApi,
+    });
   }
   createResolver = (params: CreateResolverParams): Resolver => {
     const {

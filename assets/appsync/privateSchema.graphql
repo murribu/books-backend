@@ -42,6 +42,7 @@ type DbBan {
   isbn: String
   author: String
   leaName: String
+  banTypeId: String
   createdBy: String
   createdAt: String
 }
@@ -91,8 +92,8 @@ type Mutation {
 
 type Query {
   getOmni: GetOmniReturn
-  getBans: [DbBan]
   getBook(getBookInput: GetBookInput): DbBook
+  getAllBans: [DbBan]
 }
 
 schema {

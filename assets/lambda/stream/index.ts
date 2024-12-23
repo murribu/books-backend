@@ -40,7 +40,6 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       ":pk": { S: "omni" },
       ":sk": { S: "i" },
     },
-    AttributesToGet: ["PK", "SK", "books", "tags"],
   };
   if (newBookRecords.length > 0) {
     const omniResult = await ddb.query(omniQueryParams);

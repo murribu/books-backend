@@ -1,0 +1,15 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "Query",
+  "query" : {
+    "expression": "#PK = :PK and #SK > :SK",
+    "expressionNames" : {
+      "#PK" : "PK",
+      "#SK" : "SK"
+    },
+    "expressionValues" : {
+      ":PK" : { "S": "ban" },
+      ":SK" : { "S": "0" }
+    }
+  }
+}
