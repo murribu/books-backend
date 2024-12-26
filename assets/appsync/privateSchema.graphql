@@ -3,9 +3,10 @@ type Ban {
   SK: String
   GSI1PK: String
   GSI1SK: String
-  bookName: String
-  bookId: String
+  title: String
+  isbn: String
   author: String
+  links: String
   createdBy: String
   createdAt: String
 }
@@ -24,6 +25,7 @@ input CreateBanInput {
   leaId: String
   leaName: String
   banTypeId: String
+  links: [String]
 }
 
 input CreateBookInput {
@@ -43,6 +45,7 @@ type DbBan {
   author: String
   leaName: String
   banTypeId: String
+  links: String
   createdBy: String
   createdAt: String
 }
@@ -91,10 +94,17 @@ input CreateBanTypeInput {
   score: Int
 }
 
+input DeleteBanInput {
+  isbn: String
+  whenBanned: String
+  leaId: String
+}
+
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
   createBook(createBookInput: CreateBookInput): DbBook
   createBanType(createBanTypeInput: CreateBanTypeInput): GetOmniReturn
+  deleteBan(deleteBanInput: DeleteBanInput): DbBan
 }
 
 type Query {

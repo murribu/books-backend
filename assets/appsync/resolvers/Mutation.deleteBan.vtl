@@ -1,0 +1,8 @@
+{
+  "version": "2017-02-28",
+  "operation": "DeleteItem",
+  "key": {
+    "PK": $util.dynamodb.toDynamoDBJson("ban"),
+    "SK": $util.dynamodb.toDynamoDBJson("$ctx.args.deleteBanInput.isbn#$ctx.args.deleteBanInput.whenBanned#$ctx.args.deleteBanInput.leaId")
+  }
+}

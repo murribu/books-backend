@@ -12,6 +12,7 @@
     "author": $util.dynamodb.toDynamoDBJson("$ctx.stash.author"),
     "leaName": $util.dynamodb.toDynamoDBJson("$ctx.stash.leaName"),
     "banTypeId": $util.dynamodb.toDynamoDBJson("$ctx.stash.banTypeId"),
+    "links": $util.dynamodb.toDynamoDBJson("$ctx.stash.links"),
     "createdBy": $util.dynamodb.toDynamoDBJson("$ctx.identity.username"),
     "createdAt": $util.dynamodb.toDynamoDBJson("$util.time.nowISO8601()")
   }
