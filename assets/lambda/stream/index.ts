@@ -9,6 +9,15 @@ export const ddb = new DynamoDB({ apiVersion: "2006-03-01" });
 
 const TableName = process.env.TABLE_NAME || "";
 
+const omniQueryParams: QueryCommandInput = {
+  TableName,
+  KeyConditionExpression: "PK = :pk and SK = :sk",
+  ExpressionAttributeValues: {
+    ":pk": { S: "omni" },
+    ":sk": { S: "i" },
+  },
+};
+
 export const handler = async (event: DynamoDBStreamEvent) => {
   console.log("event", JSON.stringify(event, null, 2));
 
@@ -32,15 +41,15 @@ export const handler = async (event: DynamoDBStreamEvent) => {
       record.dynamodb?.OldImage?.PK.S?.startsWith("tag#") &&
       !record.dynamodb?.NewImage
   );
+  const newBanRecords = event.Records.filter(
+    (record) =>
+      record.dynamodb?.NewImage?.PK.S === "ban" && !record.dynamodb?.OldImage
+  );
+  const removedBanRecords = event.Records.filter(
+    (record) =>
+      record.dynamodb?.OldImage?.PK.S === "ban" && !record.dynamodb?.NewImage
+  );
   let omni;
-  const omniQueryParams: QueryCommandInput = {
-    TableName,
-    KeyConditionExpression: "PK = :pk and SK = :sk",
-    ExpressionAttributeValues: {
-      ":pk": { S: "omni" },
-      ":sk": { S: "i" },
-    },
-  };
   if (newBookRecords.length > 0) {
     const omniResult = await ddb.query(omniQueryParams);
     if (omniResult.Items && omniResult.Items.length > 0) {
@@ -193,6 +202,77 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     };
     await ddb.updateItem(updateItemParams);
   }
+  if (newBanRecords.length > 0) {
+    await processBanRecords(newBanRecords, omni, "new");
+  }
+  if (removedBanRecords.length > 0) {
+    await processBanRecords(removedBanRecords, omni, "removed");
+  }
 
   return "Success";
+};
+
+const processBanRecords = async (
+  records: any[],
+  omni: any,
+  type: "new" | "removed"
+) => {
+  // for each record, update its lea's score in the omni record
+  if (!omni) {
+    const omniResult = await ddb.query(omniQueryParams);
+    if (omniResult.Items && omniResult.Items.length > 0) {
+      omni = omniResult.Items[0] as Record<string, AttributeValue>;
+    }
+  }
+  const leas = omni?.leas?.L || [];
+  const banTypes = omni?.banTypes?.L || [];
+  for (const record of records) {
+    let leaId: string;
+    if (type === "new") {
+      leaId = record.dynamodb?.NewImage?.GSI1PK.S.split("#")[1];
+    } else {
+      leaId = record.dynamodb?.OldImage?.GSI1PK.S.split("#")[1];
+    }
+    const leaIndex = leas.findIndex((lea: any) => lea.M?.id?.S === leaId);
+    let banType: any;
+    if (type === "new") {
+      banType = banTypes.find(
+        (banType: any) =>
+          banType.M?.id?.S === record.dynamodb?.NewImage?.banTypeId.S
+      );
+    } else {
+      banType = banTypes.find(
+        (banType: any) =>
+          banType.M?.id?.S === record.dynamodb?.OldImage?.banTypeId.S
+      );
+    }
+    if (leaIndex > -1 && banType) {
+      const lea = leas[leaIndex].M;
+      const score = lea?.score?.N ? parseInt(lea.score.N) : 0;
+      let newScore;
+      if (type === "new") {
+        newScore = (score + parseInt(banType.M?.score.N || "0")).toString();
+      } else {
+        newScore = (score - parseInt(banType.M?.score.N || "0")).toString();
+      }
+      const updateItemParams: UpdateItemCommandInput = {
+        TableName,
+        Key: {
+          PK: { S: "omni" },
+          SK: { S: "i" },
+        },
+        UpdateExpression: `SET #leas[${leaIndex}].score = :score`,
+        ExpressionAttributeNames: {
+          "#leas": "leas",
+        },
+        ExpressionAttributeValues: {
+          ":score": {
+            N: newScore,
+          },
+        },
+      };
+      const response = await ddb.updateItem(updateItemParams);
+      console.log("update lea score response", response);
+    }
+  }
 };
