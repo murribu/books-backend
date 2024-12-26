@@ -1,0 +1,16 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "UpdateItem",
+  "key" : {
+    "PK" : { "S": "ban" },
+    "SK" : { "S": "$ctx.args.updateBanInput.isbn#$ctx.args.updateBanInput.whenBanned#$ctx.args.updateBanInput.leaId" }
+  },
+  "update" :
+  {
+    "expression" : "SET #links = :links",
+    "expressionNames" : { "#links": "links" },
+    "expressionValues" : {
+      ":links": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBanInput.links")
+    }
+  }
+}

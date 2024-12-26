@@ -25,7 +25,7 @@ input CreateBanInput {
   leaId: String
   leaName: String
   banTypeId: String
-  links: [String]
+  links: String
 }
 
 input CreateBookInput {
@@ -100,11 +100,19 @@ input DeleteBanInput {
   leaId: String
 }
 
+input UpdateBanInput {
+  isbn: String
+  whenBanned: String
+  leaId: String
+  links: String
+}
+
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
   createBook(createBookInput: CreateBookInput): DbBook
   createBanType(createBanTypeInput: CreateBanTypeInput): GetOmniReturn
   deleteBan(deleteBanInput: DeleteBanInput): DbBan
+  updateBan(updateBanInput: UpdateBanInput): DbBan
 }
 
 type Query {
