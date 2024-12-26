@@ -107,6 +107,14 @@ input UpdateBanInput {
   links: String
 }
 
+input GetBansByLeaInput {
+  leaId: String
+}
+
+input GetBansByIsbnInput {
+  isbn: String
+}
+
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
   createBook(createBookInput: CreateBookInput): DbBook
@@ -119,6 +127,8 @@ type Query {
   getOmni: GetOmniReturn
   getBook(getBookInput: GetBookInput): DbBook
   getAllBans: [DbBan]
+  getBansByLea(getBansByLeaInput: GetBansByLeaInput): [DbBan]
+  getBansByIsbn(getBansByIsbnInput: GetBansByIsbnInput): [DbBan]
 }
 
 schema {

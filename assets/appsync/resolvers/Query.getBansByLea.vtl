@@ -1,0 +1,16 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "Query",
+  "query" : {
+    "expression": "#GSI1PK = :GSI1PK and #GSI1SK > :GSI1SK",
+    "expressionNames" : {
+      "#GSI1PK" : "GSI1PK",
+      "#GSI1SK" : "GSI1SK"
+    },
+    "expressionValues" : {
+      ":GSI1PK" : { "S": "ban#$ctx.args.getBansByLeaInput.leaId" },
+      ":GSI1SK" : { "S": "0" }
+    }
+  },
+  "index": "GSI1",
+}
