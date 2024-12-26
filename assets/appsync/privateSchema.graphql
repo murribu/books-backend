@@ -85,9 +85,16 @@ type Lea {
   score: Int
 }
 
+input CreateBanTypeInput {
+  name: String
+  id: String
+  score: Int
+}
+
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
   createBook(createBookInput: CreateBookInput): DbBook
+  createBanType(createBanTypeInput: CreateBanTypeInput): GetOmniReturn
 }
 
 type Query {

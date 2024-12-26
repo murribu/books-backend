@@ -1,0 +1,23 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "UpdateItem",
+  "key" : {
+    "PK" : { "S": "omni" },
+    "SK" : { "S": "i" }
+  },
+  "update" : 
+  { 
+    "expression": "SET #banTypes = list_append(if_not_exists(#banTypes, :empty_list), :banType)",
+    "expressionNames": { "#banTypes": "banTypes" },
+    "expressionValues" : {
+      ":banType" : { "L": [
+        { "M": {
+          "id": { "S": "$ctx.args.createBanTypeInput.id" },
+          "name": { "S": "$ctx.args.createBanTypeInput.name" },
+          "score": { "N": "$ctx.args.createBanTypeInput.score" }
+        }}
+      ]},
+      ":empty_list" : { "L": [] }
+    }
+  }
+}

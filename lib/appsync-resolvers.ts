@@ -2,9 +2,6 @@ import { Stack } from "aws-cdk-lib";
 import {
   AppsyncFunction,
   BaseDataSource,
-  CfnFunctionConfiguration,
-  CfnResolver,
-  GraphqlApi,
   MappingTemplate,
   Resolver,
 } from "aws-cdk-lib/aws-appsync";
@@ -57,6 +54,14 @@ export class AppsyncResolvers extends Stack {
       fieldName: "getAllBans",
       kind: "UNIT",
       responseType: "Multiple",
+      dataSource: props.appsync.privateDynamoDatasource,
+      api: props.appsync.privateApi,
+    });
+    this.createResolver({
+      typeName: "Mutation",
+      fieldName: "createBanType",
+      kind: "UNIT",
+      responseType: "Single",
       dataSource: props.appsync.privateDynamoDatasource,
       api: props.appsync.privateApi,
     });
