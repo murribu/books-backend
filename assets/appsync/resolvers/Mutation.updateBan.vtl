@@ -3,7 +3,7 @@
   "operation" : "UpdateItem",
   "key" : {
     "PK" : { "S": "ban" },
-    "SK" : { "S": "$ctx.args.updateBanInput.isbn#$ctx.args.updateBanInput.whenBanned#$ctx.args.updateBanInput.leaId" }
+    "SK" : { "S": "$ctx.args.updateBanInput.bookId#$ctx.args.updateBanInput.whenBanned#$ctx.args.updateBanInput.leaId" }
   },
   "update" :
   {

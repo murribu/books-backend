@@ -11,7 +11,7 @@ export interface CreateTagsArgs {
 }
 
 export interface TagBookArgs {
-  isbn: string;
+  bookId: string;
   tags: string[];
 }
 
@@ -65,7 +65,7 @@ export const tagBook = async (event: AppsyncRequestBase) => {
       [process.env.DYNAMO_TABLE!]: a.tags.map((tag) => ({
         PutRequest: {
           Item: {
-            PK: { S: `book#${a.isbn}` },
+            PK: { S: `book#${a.bookId}` },
             SK: { S: `tag#${tag}` },
             createdBy: { S: event.sub },
             createdAt: { S: new Date().toISOString() },
@@ -86,7 +86,7 @@ export const untagBook = async (event: AppsyncRequestBase) => {
       [process.env.DYNAMO_TABLE!]: a.tags.map((tag) => ({
         DeleteRequest: {
           Key: {
-            PK: { S: `book#${a.isbn}` },
+            PK: { S: `book#${a.bookId}` },
             SK: { S: `tag#${tag}` },
           },
         },

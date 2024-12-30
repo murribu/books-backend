@@ -7,14 +7,14 @@ import {
 import { AppsyncRequestBase, ddb } from ".";
 
 export interface CreateBookArgs {
-  isbn: string;
+  id: string;
   title: string;
   author: string;
   tags: string[];
 }
 
 export interface DeleteBookArgs {
-  isbn: string;
+  id: string;
 }
 
 export const createBook = async (event: AppsyncRequestBase) => {
@@ -22,7 +22,7 @@ export const createBook = async (event: AppsyncRequestBase) => {
   const putItemParams: PutItemCommandInput = {
     TableName: process.env.DYNAMO_TABLE!,
     Item: {
-      PK: { S: `book#${a.isbn}` },
+      PK: { S: `book#${a.id}` },
       SK: { S: "i" },
       data: {
         M: {
@@ -46,7 +46,7 @@ export const updateBook = async (event: AppsyncRequestBase) => {
   const updateItemParams: UpdateItemCommandInput = {
     TableName: process.env.DYNAMO_TABLE!,
     Key: {
-      PK: { S: `book#${a.isbn}` },
+      PK: { S: `book#${a.id}` },
       SK: { S: "i" },
     },
     UpdateExpression:
@@ -71,7 +71,7 @@ export const deleteBook = async (event: AppsyncRequestBase) => {
   const deleteItemParams: DeleteItemCommandInput = {
     TableName: process.env.DYNAMO_TABLE!,
     Key: {
-      PK: { S: `book#${a.isbn}` },
+      PK: { S: `book#${a.id}` },
       SK: { S: "i" },
     },
   };

@@ -91,7 +91,7 @@ export class AppsyncResolvers extends Stack {
     });
     this.createResolver({
       typeName: "Query",
-      fieldName: "getBansByIsbn",
+      fieldName: "getBansByBookId",
       kind: "UNIT",
       responseType: "Multiple",
       dataSource: props.appsync.privateDynamoDatasource,

@@ -9,7 +9,7 @@
   "expressionAttributeValues" : {
     ":book" : { "L": [
       { "M": {
-        "isbn": { "S": "$ctx.args.createBookInput.isbn" },
+        "id": { "S": "$ctx.args.createBookInput.id" },
         "title": { "S": "$ctx.args.createBookInput.title" },
         "author": { "S": "$ctx.args.createBookInput.author" },
         "count": { "N": "0" }

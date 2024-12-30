@@ -3,6 +3,6 @@
   "operation": "DeleteItem",
   "key": {
     "PK": $util.dynamodb.toDynamoDBJson("ban"),
-    "SK": $util.dynamodb.toDynamoDBJson("$ctx.args.deleteBanInput.isbn#$ctx.args.deleteBanInput.whenBanned#$ctx.args.deleteBanInput.leaId")
+    "SK": $util.dynamodb.toDynamoDBJson("$ctx.args.deleteBanInput.bookId#$ctx.args.deleteBanInput.whenBanned#$ctx.args.deleteBanInput.leaId")
   }
 }

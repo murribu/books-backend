@@ -4,7 +4,7 @@ type Ban {
   GSI1PK: String
   GSI1SK: String
   title: String
-  isbn: String
+  bookId: String
   author: String
   links: String
   createdBy: String
@@ -14,13 +14,13 @@ type Ban {
 type Book {
   title: String
   author: String
-  isbn: String
+  id: String
   link: String
   count: Int
 }
 
 input CreateBanInput {
-  isbn: String
+  bookId: String
   whenBanned: String
   leaId: String
   leaName: String
@@ -31,7 +31,6 @@ input CreateBanInput {
 input CreateBookInput {
   title: String
   author: String
-  isbn: String
   link: String
 }
 
@@ -41,7 +40,7 @@ type DbBan {
   GSI1PK: String
   GSI1SK: String
   title: String
-  isbn: String
+  bookId: String
   author: String
   leaName: String
   banTypeId: String
@@ -63,7 +62,7 @@ type DbBook {
 }
 
 input GetBookInput {
-  isbn: String
+  id: String
 }
 
 type BanType {
@@ -95,13 +94,13 @@ input CreateBanTypeInput {
 }
 
 input DeleteBanInput {
-  isbn: String
+  bookId: String
   whenBanned: String
   leaId: String
 }
 
 input UpdateBanInput {
-  isbn: String
+  bookId: String
   whenBanned: String
   leaId: String
   links: String
@@ -111,8 +110,8 @@ input GetBansByLeaInput {
   leaId: String
 }
 
-input GetBansByIsbnInput {
-  isbn: String
+input GetBansByBookIdInput {
+  bookId: String
 }
 
 type Mutation {
@@ -128,7 +127,7 @@ type Query {
   getBook(getBookInput: GetBookInput): DbBook
   getAllBans: [DbBan]
   getBansByLea(getBansByLeaInput: GetBansByLeaInput): [DbBan]
-  getBansByIsbn(getBansByIsbnInput: GetBansByIsbnInput): [DbBan]
+  getBansByBookId(getBansByBookIdInput: GetBansByBookIdInput): [DbBan]
 }
 
 schema {
