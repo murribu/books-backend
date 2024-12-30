@@ -1,0 +1,18 @@
+{
+  "version" : "2017-02-28",
+  "operation" : "UpdateItem",
+  "key" : {
+    "PK" : { "S": "book#$ctx.args.updateBookInput.id" },
+    "SK" : { "S": "i" }
+  },
+  "update" :
+  {
+    "expression" : "SET #title = :title, #author = :author, #isbn = :isbn, #links = :links",
+    "expressionNames" : { "#title": "title", "#author": "author", "#isbn": "isbn", "#links": "links" },
+    "expressionValues" : {
+      ":title": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBookInput.title"),
+      ":author": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBookInput.author"),
+      ":links": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBookInput.links")
+    }
+  }
+}

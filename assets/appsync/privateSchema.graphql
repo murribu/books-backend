@@ -56,7 +56,7 @@ type DbBook {
   GSI1SK: String
   title: String
   author: String
-  link: String
+  links: String
   createdBy: String
   createdAt: String
 }
@@ -114,12 +114,20 @@ input GetBansByBookIdInput {
   bookId: String
 }
 
+input UpdateBookInput {
+  id: String
+  title: String
+  author: String
+  links: String
+}
+
 type Mutation {
   createBan(createBanInput: CreateBanInput): DbBan
   createBook(createBookInput: CreateBookInput): DbBook
   createBanType(createBanTypeInput: CreateBanTypeInput): GetOmniReturn
   deleteBan(deleteBanInput: DeleteBanInput): DbBan
   updateBan(updateBanInput: UpdateBanInput): DbBan
+  updateBook(updateBookInput: UpdateBookInput): DbBook
 }
 
 type Query {
