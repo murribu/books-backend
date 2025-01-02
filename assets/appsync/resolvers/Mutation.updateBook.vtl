@@ -7,8 +7,8 @@
   },
   "update" :
   {
-    "expression" : "SET #title = :title, #author = :author, #isbn = :isbn, #links = :links",
-    "expressionNames" : { "#title": "title", "#author": "author", "#isbn": "isbn", "#links": "links" },
+    "expression" : "SET #title = :title, #author = :author, #links = :links",
+    "expressionNames" : { "#title": "title", "#author": "author", "#links": "links" },
     "expressionValues" : {
       ":title": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBookInput.title"),
       ":author": $util.dynamodb.toDynamoDBJson("$ctx.args.updateBookInput.author"),

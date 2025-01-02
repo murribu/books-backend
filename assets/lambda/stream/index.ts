@@ -49,6 +49,11 @@ export const handler = async (event: DynamoDBStreamEvent) => {
     (record) =>
       record.dynamodb?.OldImage?.PK.S === "ban" && !record.dynamodb?.NewImage
   );
+  const updatedBooks = event.Records.filter(
+    (record) =>
+      record.dynamodb?.NewImage?.PK.S?.startsWith("book#") &&
+      record.dynamodb?.OldImage
+  );
   let omni;
   if (newBookRecords.length > 0) {
     const omniResult = await ddb.query(omniQueryParams);
@@ -207,6 +212,40 @@ export const handler = async (event: DynamoDBStreamEvent) => {
   }
   if (removedBanRecords.length > 0) {
     await processBanRecords(removedBanRecords, omni, "removed");
+  }
+  if (updatedBooks.length > 0) {
+    const omniResult = await ddb.query(omniQueryParams);
+    if (omniResult.Items && omniResult.Items.length > 0) {
+      omni = omniResult.Items[0] as Record<string, AttributeValue>;
+    }
+    const omniBooks = omni?.books?.L || [];
+    for (const record of updatedBooks) {
+      const bookId = record.dynamodb?.NewImage?.PK.S?.split("#")[1];
+      const bookIndex = omniBooks.findIndex((book) => book.M?.id?.S === bookId);
+      if (bookIndex > -1) {
+        const book = omniBooks[bookIndex].M;
+        const updateItemParams: UpdateItemCommandInput = {
+          TableName,
+          Key: {
+            PK: { S: "omni" },
+            SK: { S: "i" },
+          },
+          UpdateExpression: `SET #books[${bookIndex}].title = :title, #books[${bookIndex}].author = :author`,
+          ExpressionAttributeNames: {
+            "#books": "books",
+          },
+          ExpressionAttributeValues: {
+            ":title": {
+              S: record.dynamodb?.NewImage?.title.S || "",
+            },
+            ":author": {
+              S: record.dynamodb?.NewImage?.author.S || "",
+            },
+          },
+        };
+        await ddb.updateItem(updateItemParams);
+      }
+    }
   }
 
   return "Success";
